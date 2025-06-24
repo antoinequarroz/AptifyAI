@@ -29,7 +29,7 @@
             <h3>Section Professeur</h3>
             <ul>
               <li>Mes cours (création/édition)</li>
-              <li>Gestion de mes classes/groupes</li>
+              <li>Gestion de mes classes/groupes</li>git
               <li>Suivi des étudiants</li>
             </ul>
           </div>
