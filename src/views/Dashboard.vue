@@ -1,94 +1,87 @@
 <template>
-  <div class="dashboard-container">
-    <Card v-if="profile && profile.role === 'admin'">
-      <template #content>
-        <AdminDashboard />
-      </template>
-    </Card>
-    <Card v-else>
-      <template #title>Dashboard</template>
-      <template #content>
-        <div v-if="loading">
-          <ProgressSpinner style="width:40px;height:40px" strokeWidth="5" />
-        </div>
-        <div v-else-if="!profile">
-          <Message severity="error">Impossible de charger le profil utilisateur.</Message>
-        </div>
-        <div v-else>
-          <div v-if="profile.role === 'admin'">
-            <h3>Section Administrateur</h3>
-            <ul>
-              <li>Statistiques globales</li>
-              <li>Gestion des utilisateurs</li>
-              <li>Gestion des abonnements</li>
-              <li>Gestion des cours et classes</li>
-              <li>Création de compte</li>
-            </ul>
-          </div>
-          <div v-else-if="profile.role === 'prof'">
-            <h3>Section Professeur</h3>
-            <ul>
-              <li>Mes cours (création/édition)</li>
-              <li>Gestion de mes classes/groupes</li>git
-              <li>Suivi des étudiants</li>
-            </ul>
-          </div>
-          <div v-else>
-            <h3>Section Étudiant</h3>
-            <ul>
-              <li>Mes cours suivis</li>
-              <li>Rendre des travaux/exercices</li>
-              <li>Voir mes résultats</li>
-            </ul>
-          </div>
-          <Divider />
-          <Button label="Se déconnecter" icon="pi pi-sign-out" class="p-button-danger" @click="logout" />
-        </div>
-      </template>
-    </Card>
+  <div class="dashboard-basic">
+    <h2>Tableau de bord</h2>
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <h3>Mes cours</h3>
+        <ul>
+          <li>Voir mes cours inscrits</li>
+          <li>Accéder au contenu</li>
+          <li>Progresser dans mes modules</li>
+        </ul>
+        <RouterLink to="/courses" class="dashboard-link">Accéder à mes cours</RouterLink>
+      </div>
+      <div class="dashboard-card">
+        <h3>Abonnement</h3>
+        <ul>
+          <li>Voir mon statut d'abonnement</li>
+          <li>Changer de formule</li>
+          <li>Gérer le paiement</li>
+        </ul>
+        <RouterLink to="/subscription" class="dashboard-link">Gérer mon abonnement</RouterLink>
+      </div>
+      <div class="dashboard-card">
+        <h3>Profil</h3>
+        <ul>
+          <li>Voir mes informations</li>
+          <li>Modifier mon email/mot de passe</li>
+          <li>Se déconnecter</li>
+        </ul>
+        <RouterLink to="/profile" class="dashboard-link">Mon profil</RouterLink>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import Card from 'primevue/card';
-import Button from 'primevue/button';
-import Divider from 'primevue/divider';
-import Message from 'primevue/message';
-import ProgressSpinner from 'primevue/progressspinner';
-import { useRouter } from 'vue-router';
-import { supabase } from '../lib/supabase';
-import { getProfile } from '../lib/profile';
-import { ref, onMounted } from 'vue';
-import AdminDashboard from './AdminDashboard.vue';
-
-const router = useRouter();
-const profile = ref(null);
-const loading = ref(true);
-
-async function fetchProfile() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    loading.value = false;
-    return;
-  }
-  profile.value = await getProfile(user.id);
-  loading.value = false;
-}
-
-onMounted(fetchProfile);
-supabase.auth.onAuthStateChange(() => {
-  fetchProfile();
-});
-
-async function logout() {
-  await supabase.auth.signOut();
-  router.push('/login');
-}
+import { RouterLink } from 'vue-router';
 </script>
 
 <style scoped>
-.dashboard-container {
-  max-width: 900px;
+.dashboard-basic {
+  max-width: 1100px;
   margin: 3rem auto;
+  padding: 2rem 1rem;
+}
+.dashboard-basic h2 {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+.dashboard-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+.dashboard-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 2rem 1.5rem;
+  min-width: 270px;
+  max-width: 320px;
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.dashboard-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #2196f3;
+}
+.dashboard-card ul {
+  padding-left: 1.2em;
+  margin-bottom: 1.5rem;
+}
+.dashboard-link {
+  margin-top: auto;
+  color: #42b983;
+  font-weight: 500;
+  text-decoration: underline;
+  align-self: flex-end;
+}
+.dashboard-link:hover {
+  color: #2196f3;
 }
 </style>
